@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Utente {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String     @db.VarChar(255)
+  age       Int        @db.Int
+  gender    String     @db.VarChar(45)
+  adress    String     @db.VarChar(255)
+  contact   Int        @db.Int
+  deleted   Boolean    @default(false)
+  Consultas Consulta[]
+}
+
+model Consulta {
+  id               String   @id @default(uuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  startingDateTime DateTime @db.Date
+  endingDateTime   DateTime @db.Timestamp()
+  room             String   @db.VarChar(45)
+  observations     String   @db.VarChar(255)
+  deleted          Boolean  @default(false)
+  medico           Medico   @relation(fields: [medicoId], references: [id])
+  medicoId         String
+  utente           Utente   @relation(fields: [utenteId], references: [id])
+  utenteId         String
+}
+
+model Medico {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String     @db.VarChar(255)
+  specialty String     @db.VarChar(255)
+  deleted   Boolean    @default(false)
+  Consultas Consulta[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  username  String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  deleted   Boolean  @default(false)
+  profile   Profile?
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?  @db.VarChar(255)
+  lastName  String?  @db.VarChar(255)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+}
